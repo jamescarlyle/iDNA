@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>iDNA</title>
+	<meta name="description" content="tracking personal identity using smart contracts">
+	<meta name="author" content="James Carlyle">
+
+	<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+	<link rel="stylesheet" href="css/theme.css" media="screen">
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body role="document"><!-- data-spy="scroll" data-target="#navigation-bar" data-offset="60"  -->
+<nav class="navbar navbar-inverse navbar-fixed-top" id="navigation-bar">
+	<div class="container-fluid">
+		<ul class="nav navbar-nav">
+			<li><a href="#home#home">iDNA</a></li>
+			<li><a href="#home#how">How</a></li>
+			<li><a href="#home#configure">Configure</a></li>
+			<li><a href="#create">Create</a></li>
+			<li><a href="#register">Register</a></li>
+			<li><a href="#log">Log</a></li>
+			<li><a href="#report">Report</a></li>
+		</ul>
+	</div>
+</nav>
+<div id="view-area" ng-view></div>
+</body>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
+<script src="js/angular-route.min.js"></script>
+<script src="js/angular-messages.min.js"></script>
+<script src="js/bignumber.js"></script>
+<script src="js/web3.js"></script>
+<script src="js/app.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/services.js"></script>
+<script type="text/ng-template" id="home-template">
+<div id="home" class="cover vertical-bottom">
+	<div class="container-fluid content">
+		<h1>iDNA</h1>
+		<p class="lead">Recognising your life</p>
+		<p><button class="btn btn-primary btn-lg" ng-click="identityManager.scrollSmooth('#how')">Learn more</button></p>
+	</div>
+</div>
+<div id="how" class="container-fluid content">
+	<h2>How does iDNA work?</h2>
+	<p>iDNA is an identiy system built upon smart contracts, and implemented on top of a widely-distributed and public record scrapbook entries.</p>
+	<p>This means that the entries become logged in perpetuity, which cannot be withdrawn, denied or manipulated.</p>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3><span class="glyphicon glyphicon-leaf"></span> <a href="#create">Create</a></h3>
+				</div>
+				<div class="panel-body">
+					1. A charity or other benefactor organisation starts by registering themselves.
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3><span class="glyphicon glyphicon-user"></span> <a href="#register">Register</a></h3>
+				</div>
+				<div class="panel-body">
+					2. Individuals or charities acting on behalf of them register the individual.
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3><span class="glyphicon glyphicon-heart"></span> <a href="#nominate">Log</a></h3>
+				</div>
+				<div class="panel-body">
+					3. Individuals register updates to their record, by logging the hash or thumbprint of the lastest updates to their scrapbook stored on a filesystem.
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="configure" class="container-fluid content">
+	<h2>Configure iDNA</h2>
+	<p>
+		The iDNA contract has an address, and user accounts each have an address. The contract and user account must be configured using the drop-downs below. 
+	</p>
+	<p>
+		<span class="glyphicon glyphicon-briefcase"></span> Contract: 
+		<select class="form-control" ng-model="identityManager.contract">
+			<option ng-repeat="contract in identityManager.contracts">{{contract}}</option>
+		</select>
+		<span class="glyphicon glyphicon-user"></span> User account: 
+		<select class="form-control" ng-model="identityManager.account">
+			<option ng-repeat="account in identityManager.accounts">{{account}}</option>
+		</select>
+	</p>
+	<p>
+		iDNA is based on a contract that is deployed to many nodes running a distributed ledger. The contract creation step is shown in this screenshot.
+	</p>
+	<p>
+		<img src="images/transaction-screenshot.png" class="img-thumbnail"/>
+	</p>
+</div>
+</script>
+<script type="text/ng-template" id="create-template">
+<div id="create" class="container-fluid content">
+	<h2><span class="glyphicon glyphicon-list-alt"></span> Register the charity</h2>
+	<p>Only the owner of the contract may do this.</p>
+	<div class="panel panel-primary">
+		<div class="panel-body">
+			<form name="identityManager.form" role="form" ng-submit="identityManager.registerCharity()">
+				<div class="form-group" ng-class="{'has-error': identityManager.form.charityName.$error.required}">
+					<label for="charityName">Charity name</label>
+					<div class="input-group">
+						<span class="input-group-addon">#</span>
+						<input type="text" class="form-control" id="charityName" name="charityName" placeholder="please enter the charity's name" ng-model="identityManager.charityName" required/>
+					</div>
+				</div>
+				<div class="form-group" ng-class="{'has-error': identityManager.form.storeName.$error.required}">
+					<label for="storeName">Data store name</label>
+					<input type="text" class="form-control" id="storeName" name="storeName" placeholder="please enter the name of the scrapbook store" ng-model="identityManager.storeName" required/>
+				</div>
+				<div class="form-group" ng-class="{'has-error': identityManager.form.baseUrl.$error.required}">
+					<label for="baseUrl">Data store URL</label>
+					<input type="text" class="form-control" id="baseUrl" name="baseUrl" placeholder="please enter the base url of the scrapbook store" ng-model="identityManager.baseUrl" required/>
+				</div>
+				<input type="submit" class="btn btn-primary" value="create category" ng-disabled="identityManager.form.$invalid"/>
+			</form>
+		</div>
+	</div>
+</div>
+</script>
+<script type="text/ng-template" id="register-template">
+<div id="register" class="container-fluid content">
+	<h2><span class="glyphicon glyphicon-user"></span> Register for the Scrapbook service</h2>
+	<div class="panel panel-primary">
+		<div class="panel-body">
+			<form name="identityManager.form" role="form" ng-submit="identityManager.registerIdentity()">
+				<div class="form-group" ng-class="{'has-error': identityManager.form.identityName.$error.required}">
+					<label for="identityName">Identity name</label>
+					<div class="input-group">
+						<span class="input-group-addon">#</span>
+						<input type="text" class="form-control" id="identityName" name="identityName" placeholder="please enter the name for the identity" ng-model="identityManager.identityName" required/>
+					</div>
+				</div>
+				<div class="form-group" ng-class="{'has-error': identityManager.form.charityName.$error.required}">
+					<label for="charityName">Charity name</label>
+					<div class="input-group">
+						<span class="input-group-addon">#</span>
+						<input type="text" class="form-control" id="charityName" name="charityName" placeholder="please enter the charity's name" ng-model="identityManager.charityName" required/>
+					</div>
+				</div>
+				<input type="submit" class="btn btn-primary" value="register" ng-disabled="identityManager.form.$invalid"/>
+			</form>
+		</div>
+	</div>
+</div>
+</script>
+<script type="text/ng-template" id="log-template">
+<div id="bid" class="container-fluid content">
+	<h2><span class="glyphicon glyphicon-bullhorn"></span> Log a scrapbook entry</h2>
+	<div class="panel panel-primary">
+		<div class="panel-body">
+			<form name="identityManager.form" role="form" ng-submit="identityManager.createScrapBookEntry()">
+				<div class="form-group" ng-class="{'has-error': identityManager.form.hashValue.$error.required}">
+					<label for="hashValue">Hash value</label>
+					<div class="input-group">
+						<span class="input-group-addon">#</span>
+						<input type="text" id="hashValue" name="hashValue" class="form-control" placeholder="please enter the hash value of the last update" 
+					ng-model="identityManager.hashValue" required/>
+					</div>
+				</div>
+				<div class="form-group" ng-class="{'has-error': identityManager.form.comment.$error.required}">
+					<label for="comment">Comment</label>
+					<input type="text" id="comment" name="comment" class="form-control" placeholder="please enter the comment for this update" 
+					ng-model="identityManager.comment" required/>
+				</div>
+				<input type="submit" class="btn btn-primary" value="register" ng-disabled="identityManager.form.$invalid"/>
+			</form>
+		</div>
+	</div>
+</div>
+</script>
+</html>

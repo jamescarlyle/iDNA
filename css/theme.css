@@ -1,0 +1,28 @@
+body {
+}
+
+body > div.in-transition {
+		transition: all 2s ease;
+}
+
+div.content {
+	padding-top: 40px;
+	min-height: 400px;
+}
+
+div.cover{
+	color: #fff;
+	background: url("../images/cover.jpg") no-repeat scroll 100% / cover transparent;
+	margin-top: -10px;
+	min-height: 900px;
+	text-align: center;
+}
+
+div.vertical-bottom {
+	display: flex;
+	align-items: flex-end;
+}
+
+.ng-enter { transition: 1s ease all; opacity:0; }
+.ng-enter.ng-enter-active { opacity:1; }
+
