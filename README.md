@@ -23,4 +23,5 @@ This solution will seek to build on existing open source efforts for a number of
 4.  Decentralised Passport - [World Citizenship](https://github.com/MrChrisJ/World-Citizenship)
 5.  Facial recognition - [open Biometrics](https://github.com/biometrics/openbr)
 6.  Finger vein recognition - [TBD]
+7.  Solidity programming language - [Solidity](https://github.com/ethereum/wiki/wiki/The-Solidity-Programming-Language)
 
